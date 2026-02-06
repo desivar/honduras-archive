@@ -16,6 +16,7 @@
     "install": "^0.13.0",
     "mongoose": "^9.1.6",
     "multer": "^2.0.2",
+    "multer-storage-cloudinary": "^4.0.0",
     "npm": "^11.9.0"
   }
 }
