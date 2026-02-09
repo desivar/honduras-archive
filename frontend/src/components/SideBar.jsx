@@ -246,8 +246,8 @@ const Sidebar = ({ user, onLogout }) => {
 
       {/* Support Link */}
       <div style={{
-        marginTop: '30px',
-        paddingTop: '20px',
+        marginTop: '45px',
+        paddingTop: '30px',
         borderTop: '1px solid rgba(172, 163, 126, 0.5)'
       }}>
         <a
