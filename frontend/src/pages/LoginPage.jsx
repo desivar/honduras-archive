@@ -26,7 +26,7 @@ const LoginPage = ({ onLogin }) => {  // ← Added onLogin prop
         
         // Call parent callback to update App.js state
         if (onLogin) {
-          onLogin(response.data);  // ← This updates App.js!
+          onLogin(response.data);  // ← This updates App.jsx!
         }
 
         // Redirect based on role
