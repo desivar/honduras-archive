@@ -39,24 +39,22 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5500/api/register', {
+      const response = await axios.post('http://localhost:5500/api/auth/signup', {
         username: formData.username,
         email: formData.email,
-        password: formData.password,
         whatsapp: formData.whatsapp,
-        role: 'admin'
+        password: formData.password,
+        role: 'admin' // 🔑 Crucial for your first account
       });
 
+      // 🟢 Now this will work because we added 'success' to the backend
       if (response.data.success) {
-        alert('Account created successfully! Please log in.');
+        alert('Account created successfully!');
         navigate('/login');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Registration failed. Please try again.');
-    } finally {
-      setLoading(false);
+      setError(err.response?.data?.message || 'Check terminal for errors');
     }
-  };
 
   return (
     <div style={{
