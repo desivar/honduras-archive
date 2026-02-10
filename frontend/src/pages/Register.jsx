@@ -55,7 +55,8 @@ const Register = () => {
     } catch (err) {
       setError(err.response?.data?.message || 'Check terminal for errors');
     }
-
+    }
+  
   return (
     <div style={{
       backgroundColor: '#EFE7DD',
@@ -304,5 +305,5 @@ const Register = () => {
     </div>
   );
 };
-}
+
 export default Register;
