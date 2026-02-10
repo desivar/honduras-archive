@@ -25,8 +25,16 @@ router.post('/signup', async (req, res) => {
     });
     
     await user.save();
-    res.status(201).json({ message: "User created!" });
+    // 🟢 Add success: true here!
+    res.status(201).json({ 
+      success: true, 
+      message: "User created!" 
+    });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    console.error("DETAILED SERVER ERROR:", err); // 🟢 This logs the REAL error to your terminal
+    res.status(500).json({ 
+      success: false, 
+      message: err.message 
+    });
   }
-});
+  
