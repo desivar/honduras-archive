@@ -7,27 +7,42 @@ const authRoutes = require('./routes/authRoutes');
 dotenv.config();
 const app = express();
 
-// Middleware
+// 1. Middleware (Must come BEFORE routes)
 app.use(express.json());
 app.use(cors());
 
-// Routes
+// 2. Auth Routes (Handles /api/auth/signup and /api/auth/login)
 app.use('/api/auth', authRoutes);
 
-// Database Connection
+// 3. Database Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("Connected to MongoDB Atlas"))
-  .catch(err => console.log(err));
+  .catch(err => console.error("MongoDB Connection Error:", err));
 
-const PORT = process.env.PORT || 5500;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
-const archiveSchema = new mongoose.Schema({ title: String, description: String, date: String, category: String });
+// 4. Archive Schema & Model
+const archiveSchema = new mongoose.Schema({ 
+  title: String, 
+  description: String, 
+  date: String, 
+  category: String,
+  imageUrl: String // Added this just in case you plan to upload images
+}, { timestamps: true });
 
 const ArchiveItem = mongoose.model('ArchiveItem', archiveSchema);
-app.use(express.json());
 
-app.post('/api/archive', async (req, res) =>
-   { try { const newItem = new ArchiveItem(req.body);
-     await newItem.save(); res.status(201).json({ message: "Item saved to Honduras Archive!" }); 
-    } catch (err) { res.status(500).json({ error: err.message }); } });
+// 5. Archive Routes
+app.post('/api/archive', async (req, res) => { 
+  try { 
+    const newItem = new ArchiveItem(req.body);
+    await newItem.save(); 
+    res.status(201).json({ success: true, message: "Item saved to Honduras Archive!" }); 
+  } catch (err) { 
+    res.status(500).json({ success: false, error: err.message }); 
+  } 
+});
+
+// 6. Start Server on 5500
+const PORT = process.env.PORT || 5500;
+app.listen(PORT, () => {
+  console.log(`🚀 Server spinning on http://localhost:${PORT}`);
+});
