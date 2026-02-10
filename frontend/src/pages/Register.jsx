@@ -39,11 +39,12 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/register', {
+      const response = await axios.post('http://localhost:5500/api/register', {
         username: formData.username,
         email: formData.email,
         password: formData.password,
-        whatsapp: formData.whatsapp
+        whatsapp: formData.whatsapp,
+        role: 'admin'
       });
 
       if (response.data.success) {
