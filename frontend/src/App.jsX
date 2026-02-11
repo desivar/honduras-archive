@@ -14,19 +14,24 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in from localStorage
+    // 1. Get the string from storage
     const storedUser = localStorage.getItem('user');
+    
     if (storedUser) {
       try {
-        setUser(JSON.parse(storedUser));
-        console.log('User loaded from localStorage:', JSON.parse(storedUser));
+        // 2. Turn the string back into an object
+        const parsedUser = JSON.parse(storedUser);
+        
+        // 3. Update the state (this is where your error is)
+        setUser(parsedUser); 
+        console.log('User loaded:', parsedUser);
       } catch (err) {
-        console.error('Error parsing stored user:', err);
+        console.error('Error parsing user:', err);
         localStorage.removeItem('user');
       }
     }
     setLoading(false);
-  }, []);
+  }, []); // 🟢 Make sure these brackets and parentheses are closed!
 
   const handleLogin = (userData) => {
     console.log('Login successful:', userData);
