@@ -94,7 +94,7 @@ const UploadPage = () => {
     data.append('userId', user.userId);
 
     try {
-    await axios.post('/api/upload-snippet', data, {
+    await axios.post('/api/upload', data, {
   headers: {
     'Content-Type': 'multipart/form-data'
   }
