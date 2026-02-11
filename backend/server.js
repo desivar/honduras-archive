@@ -10,7 +10,7 @@ const authRoutes = require('./routes/authRoutes');
 dotenv.config();
 const app = express();
 
-// 1. Cloudinary Config (Only once!)
+// 1. Cloudinary Config
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -35,7 +35,7 @@ mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("Connected to MongoDB Atlas"))
   .catch(err => console.error("MongoDB Connection Error:", err));
 
-// 4. Schema (Using [String] for names with accents)
+// 4. Schema (Handles your Spanish accents correctly)
 const archiveSchema = new mongoose.Schema({ 
   names: [String], 
   eventDate: String, 
@@ -50,10 +50,10 @@ const archiveSchema = new mongoose.Schema({
 
 const ArchiveItem = mongoose.model('ArchiveItem', archiveSchema);
 
-// 5. THE MISSING ROUTE (Matches your frontend axios call)
+// 5. THE MISSING ARCHIVE ROUTE (This fixes the 404!)
 app.post('/api/archive', upload.single('image'), async (req, res) => { 
   try { 
-    // This turns the stringified array back into a real list of names
+    // This correctly handles the special characters you typed
     const namesArray = JSON.parse(req.body.names); 
 
     const newItem = new ArchiveItem({
@@ -65,11 +65,11 @@ app.post('/api/archive', upload.single('image'), async (req, res) => {
       pdfName: req.body.pdfName,
       pageNumber: req.body.pageNumber,
       userId: req.body.userId,
-      imageUrl: req.file ? req.file.path : '' // Cloudinary URL
+      imageUrl: req.file ? req.file.path : '' 
     });
 
     await newItem.save(); 
-    res.status(201).json({ success: true, message: "Item saved to Archive!" }); 
+    res.status(201).json({ success: true, message: "Item saved!" }); 
   } catch (err) { 
     console.error("Upload Error:", err);
     res.status(500).json({ success: false, error: err.message }); 
