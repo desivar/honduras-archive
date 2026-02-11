@@ -77,10 +77,12 @@ const UploadPage = () => {
     }
 
     setUploading(true);
+    // 🟢 Change: Split the fullName into an array of names
+  const namesArray = formData.fullName.split(',').map(name => name.trim())
 
     const data = new FormData();
     data.append('image', imageFile);
-    data.append('fullName', formData.fullName);
+    data.append('names', JSON.stringify(namesArray));
     data.append('eventDate', formData.eventDate);
     data.append('location', formData.location);
     data.append('category', formData.category);
@@ -319,9 +321,9 @@ const UploadPage = () => {
             >
               <option value="News">News / Clipping</option>
               <option value="Portrait">Portrait / Photo</option>
-              <option value="Birth">Birth Record (DOB)</option>
-              <option value="Death">Death Record (DOD)</option>
-              <option value="Marriage">Marriage Certificate</option>
+              <option value="Birth">Birth News (DOB)</option>
+              <option value="Death">Death News (DOD)</option>
+              <option value="Marriage">Marriage News</option>
             </select>
           </div>
 
