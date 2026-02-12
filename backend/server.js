@@ -49,6 +49,9 @@ app.post('/api/archive',
          pdfName: req.body.pdfName, 
          pageNumber: req.body.pageNumber, 
          userId: req.body.userId, 
-         imageUrl: req.file ? req.file.path : '' }); await newItem.save(); res.status(201).json({ success: true, message: "Item saved!" }); } catch (err) { console.error("Upload Error:", err); res.status(500).json({ success: false, error: err.message }); } });
+         imageUrl: req.file ? req.file.path : '' }); await newItem.save(); 
+         res.status(201).json({ success: true, message: "Item saved!" });
+         } catch (err) { console.error("Upload Error:", err); res.status(500).json(
+          { success: false, error: err.message }); } });
 
 app.use('/api/auth', authRoutes);
