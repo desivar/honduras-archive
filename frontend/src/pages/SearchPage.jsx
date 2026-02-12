@@ -29,7 +29,7 @@ const SearchPage = () => {
     if (e) e.preventDefault(); // Prevent page reload if inside a form
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/search?name=${query}`);
+      const response = await axios.get({query});
       setResults(response.data);
     } catch (error) {
       console.error("Error fetching from database:", error);
