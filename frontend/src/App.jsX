@@ -13,6 +13,7 @@ function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+
   useEffect(() => {
     // 1. Get the string from storage
     const storedUser = localStorage.getItem('user');
