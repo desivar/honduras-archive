@@ -190,7 +190,7 @@ const RecordDetail = () => {
             </button>
             
             <a
-              href={`http://localhost:5000${record.imageUrl}`}
+                 href={`https://honduras-archive.onrender.com`}
               download={`${record.fullName.replace(/\s+/g, '_')}.jpg`}
               style={{
                 flex: 1,
