@@ -11,13 +11,13 @@ dotenv.config(); const app = express();
 
 app.use(express.json()); app.use(cors());
 
-// START SERVER FIRST const PORT = process.env.PORT || 10000; app.listen(PORT, () => { console.log(🚀 Server is LIVE on port ${PORT}); });
+// START SERVER FIRST 
+const PORT = process.env.PORT || 10000; app.listen(PORT, () => { console.log(`Server is LIVE on port ${PORT}`); });
 
-// ROOT ROUTE app.get('/', (req, res) => { res.send('Honduras Archive Backend is online!'); });
+// ROOT ROUTE 
+app.get('/', (req, res) => { res.send('Honduras Archive Backend is online!'); });
 
-cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-   api_key: process.env.CLOUDINARY_API_KEY, 
-   api_secret: process.env.CLOUDINARY_API_SECRET });
+cloudinary.config({ cloud_name: process.env.CLOUDINARY_CLOUD_NAME, api_key: process.env.CLOUDINARY_API_KEY, api_secret: process.env.CLOUDINARY_API_SECRET });
 
 const storage = new CloudinaryStorage({ cloudinary: cloudinary,
    params: { folder: 'honduras_archive', 
