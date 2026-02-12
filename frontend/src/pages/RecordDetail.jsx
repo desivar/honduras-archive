@@ -12,7 +12,7 @@ const RecordDetail = () => {
   useEffect(() => {
     const fetchRecord = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/record/${id}`);
+        const response = await axios.get('https://honduras-archive.onrender.com/api/record/${id}');
         setRecord(response.data);
       } catch (error) {
         console.error('Error fetching record:', error);
@@ -33,7 +33,7 @@ const RecordDetail = () => {
 
   const handleCopyImage = async () => {
     try {
-      const imageUrl = `http://localhost:5000${record.imageUrl}`;
+      const imageUrl = record.imageUrl;
       const response = await fetch(imageUrl);
       const blob = await response.blob();
       
@@ -154,7 +154,7 @@ const RecordDetail = () => {
             border: '2px solid #737958'
           }}>
             <img 
-              src={`http://localhost:5000${record.imageUrl}`}
+              href={record.imageUrl}
               alt={record.fullName}
               style={{
                 width: '100%',
