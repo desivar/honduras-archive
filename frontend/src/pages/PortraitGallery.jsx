@@ -6,7 +6,7 @@ const PortraitGallery = () => {
 
   useEffect(() => {
     const fetchPortraits = async () => {
-      const res = await axios.get('http://localhost:5000/api/search?category=Portrait');
+    const res = await axios.get('https://honduras-archive.onrender.com/api/search?category=Portrait');
       setPortraits(res.data);
     };
     fetchPortraits();
