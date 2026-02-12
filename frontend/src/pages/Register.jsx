@@ -39,7 +39,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5500/api/auth/signup', {
+     const response = await axios.post('https://honduras-archive.onrender.com/api/auth/signup',{
         username: formData.username,
         email: formData.email,
         whatsapp: formData.whatsapp,
