@@ -32,12 +32,12 @@ const storage = new CloudinaryStorage({
 });
 const upload = multer({ storage });
 
-// MongoDB connection
+
 // MongoDB connection with detailed error logging
 const connectDB = async () => {
   try {
     // Log connection attempt (hide password)
-    const uriWithoutPassword = process.env.MONGO_URL.replace(/:([^@]+)@/, ':****@');
+    const urlWithoutPassword = process.env.MONGO_URL.replace(/:([^@]+)@/, ':****@');
     console.log('🔄 Attempting MongoDB connection to:', uriWithoutPassword);
     
     await mongoose.connect(process.env.MONGO_URL, {
