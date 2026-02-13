@@ -43,13 +43,14 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 // 4. DATABASE CONNECTION 
-mongoose.connect(process.env.MONGO_URI, {
-  serverSelectionTimeoutMS: 30000,
-  socketTimeoutMS: 30000,
-})
-  .then(() => console.log("✅ Connected to MongoDB Atlas")) 
-  .catch(err => console.error("❌ MongoDB Connection Error:", err.message));
+// TEMPORARY TEST - hardcoded connection
+const testUri = 'mongodb+srv://jilliandesire:bueno836@cluster0.0xhod.mongodb.net/honduras_archive?retryWrites=true&w=majority';
 
+mongoose.connect(testUri)
+  .then(() => console.log("✅ Connected to MongoDB Atlas")) 
+  .catch(err => {
+    console.error("❌ MongoDB Connection Error:", err.message);
+  });
 // 5. SCHEMAS & MODELS
 const archiveSchema = new mongoose.Schema({ 
   names: [String], 
