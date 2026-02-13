@@ -11,6 +11,13 @@ const authRoutes = require('./routes/authRoutes');
 //dotenv.config(); 
 const app = express();
 
+
+// 🔍 TEMPORARY DEBUG
+console.log('🔍 Checking MONGO_URI...');
+console.log('First 50 chars:', process.env.MONGO_URI ? process.env.MONGO_URI.substring(0, 50) : 'UNDEFINED');
+console.log('Contains username:', process.env.MONGO_URI ? process.env.MONGO_URI.includes('jilliandesire') : 'NO');
+console.log('Contains database:', process.env.MONGO_URI ? process.env.MONGO_URI.includes('honduras_archive') : 'NO');
+
 // 2. MIDDLEWARE
 app.use(express.json());
 app.use(cors({
