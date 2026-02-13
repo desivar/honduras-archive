@@ -37,10 +37,10 @@ const upload = multer({ storage });
 const connectDB = async () => {
   try {
     // Log connection attempt (hide password)
-    const uriWithoutPassword = process.env.MONGO_URI.replace(/:([^@]+)@/, ':****@');
+    const uriWithoutPassword = process.env.MONGO_URL.replace(/:([^@]+)@/, ':****@');
     console.log('🔄 Attempting MongoDB connection to:', uriWithoutPassword);
     
-    await mongoose.connect(process.env.MONGO_URI, {
+    await mongoose.connect(process.env.MONGO_URL, {
       serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
     });
     
