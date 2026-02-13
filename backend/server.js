@@ -33,12 +33,36 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage });
 
 // MongoDB connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ MongoDB connected'))
-  .catch(err => {
-    console.error('❌ MongoDB error:', err.message);
+// MongoDB connection with detailed error logging
+const connectDB = async () => {
+  try {
+    // Log connection attempt (hide password)
+    const uriWithoutPassword = process.env.MONGO_URI.replace(/:([^@]+)@/, ':****@');
+    console.log('🔄 Attempting MongoDB connection to:', uriWithoutPassword);
+    
+    await mongoose.connect(process.env.MONGO_URI, {
+      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+    });
+    
+    console.log('✅ MongoDB connected successfully');
+  } catch (err) {
+    console.error('❌ MongoDB connection error:');
+    console.error('Error name:', err.name);
+    console.error('Error message:', err.message);
+    
+    // Specific error hints
+    if (err.message.includes('authentication failed')) {
+      console.error('💡 Check: Username, password (URL-encoded), and user permissions');
+    }
+    if (err.message.includes('ENOTFOUND')) {
+      console.error('💡 Check: Cluster URL is correct');
+    }
+    
     process.exit(1);
-  });
+  }
+};
+
+connectDB();
 
 // Archive Schema
 const archiveSchema = new mongoose.Schema({
