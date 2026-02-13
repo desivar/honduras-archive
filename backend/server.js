@@ -35,60 +35,21 @@ const storage = new CloudinaryStorage({
 }); 
 const upload = multer({ storage: storage });
 
-// 4. DATABASE CONNECTION 
-mongoose.connect(process.env.MONGO_URI) 
-  .then(() => console.log("✅ Connected to MongoDB Atlas")) 
-  .catch(err => console.error("❌ MongoDB Connection Error:", err.message));
-
-// 5. SCHEMAS & MODELS
-const archiveSchema = new mongoose.Schema({ 
-  names: [String], 
-  eventDate: String, 
-  location: String,
-  category: String, 
-  transcription: String, 
-  imageUrl: String, 
-  pdfName: String,
-  pageNumber: String, 
-  userId: String 
-}, { timestamps: true });
-
-const ArchiveItem = mongoose.model('ArchiveItem', archiveSchema);
-
-// 6. ROUTES
-// Root Route 
-app.get('/', (req, res) => { 
-  res.send('Honduras Archive Backend is online!'); 
-});
-
-// Auth Routes (Login)
-app.use('/api/auth', authRoutes);
-
-// Archive Upload Route
-app.post('/api/archive', upload.single('image'), async (req, res) => { 
-  try { 
-    const namesArray = JSON.parse(req.body.names); 
-    const newItem = new ArchiveItem({ 
-      names: namesArray, 
-      eventDate: req.body.eventDate,
-      location: req.body.location, 
-      category: req.body.category, 
-      transcription: req.body.transcription, 
-      pdfName: req.body.pdfName, 
-      pageNumber: req.body.pageNumber, 
-      userId: req.body.userId, 
-      imageUrl: req.file ? req.file.path : '' 
-    }); 
-    await newItem.save(); 
-    res.status(201).json({ success: true, message: "Item saved!" });
-  } catch (err) { 
-    console.error("Upload Error:", err); 
-    res.status(500).json({ success: false, error: err.message }); 
-  } 
-});
-
-// 7. START SERVER (Always at the very bottom)
-const PORT = process.env.PORT || 10000; 
-app.listen(PORT, () => { 
-  console.log(`🚀 Server is LIVE on port ${PORT}`); 
-});
+// 4. DATABASE CONNECTION & SERVER START
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 30000, // Give it 30 seconds to find Atlas on wake-up
+}) 
+  .then(() => {
+    console.log("✅ Connected to MongoDB Atlas");
+    
+    // 7. START SERVER (Now inside the .then block)
+    const PORT = process.env.PORT || 10000; 
+    app.listen(PORT, () => { 
+      console.log(`🚀 Server is LIVE and Connected to DB on port ${PORT}`); 
+    });
+  }) 
+  .catch(err => {
+    console.error("❌ MongoDB Connection Error:", err.message);
+    // If the DB fails, don't even start the server
+    process.exit(1); 
+  });
