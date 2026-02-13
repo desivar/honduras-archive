@@ -8,7 +8,7 @@ const cloudinary = require('cloudinary').v2;
 const authRoutes = require('./routes/authRoutes');
 
 // 1. CONFIGURATION
-dotenv.config(); 
+//dotenv.config(); 
 const app = express();
 
 // 2. MIDDLEWARE
