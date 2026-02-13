@@ -36,7 +36,10 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 // 4. DATABASE CONNECTION 
-mongoose.connect(process.env.MONGO_URI) 
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 30000,
+  socketTimeoutMS: 30000,
+})
   .then(() => console.log("✅ Connected to MongoDB Atlas")) 
   .catch(err => console.error("❌ MongoDB Connection Error:", err.message));
 
