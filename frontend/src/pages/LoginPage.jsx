@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 
-const LoginPage = ({ onLogin }) => {  // ← Added onLogin prop
+const LoginPage = ({ onLogin }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,16 +21,19 @@ const LoginPage = ({ onLogin }) => {  // ← Added onLogin prop
       });
 
       if (response.data.success) {
-        // Store user info with correct key
-        localStorage.setItem('user', JSON.stringify(response.data));  // ← Fixed key
+        // 1. Store the entire response in localStorage
+        localStorage.setItem('user', JSON.stringify(response.data));
         
-        // Call parent callback to update App.js state
+        // 2. Update the parent (App.jsx) state
         if (onLogin) {
-          onLogin(response.data);  // ← This updates App.jsx!
+          onLogin(response.data);
         }
 
-        // Redirect based on role
-        if (response.data.role === 'admin') {
+        // 3. Extract the role correctly from response.data.user.role
+        const userRole = response.data.user?.role; 
+
+        // 4. Redirect based on role
+        if (userRole === 'admin') {
           navigate('/upload');
         } else {
           navigate('/');
