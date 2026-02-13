@@ -90,5 +90,5 @@ app.post('/api/archive', upload.single('image'), async (req, res) => {
 // 7. START SERVER (Always at the very bottom)
 const PORT = process.env.PORT || 10000; 
 app.listen(PORT, () => { 
-  console.log(`🚀 Server is LIVE on port ${PORT}`); 
+  console.log(`🚀 Server is LIVE on port ${PORT}`);
 });
