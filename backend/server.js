@@ -36,25 +36,28 @@ const upload = multer({ storage });
 // MongoDB connection with detailed error logging
 const connectDB = async () => {
   try {
-    // Log connection attempt (hide password)
+    if (!process.env.MONGO_URL) {
+      throw new Error('MONGO_URL environment variable is not defined');
+    }
+    
     const uriWithoutPassword = process.env.MONGO_URL.replace(/:([^@]+)@/, ':****@');
     console.log('🔄 Attempting MongoDB connection to:', uriWithoutPassword);
     
     await mongoose.connect(process.env.MONGO_URL, {
-      serverSelectionTimeoutMS: 5000, // Timeout after 5s instead of 30s
+      serverSelectionTimeoutMS: 5000,
     });
     
     console.log('✅ MongoDB connected successfully');
+    
   } catch (err) {
     console.error('❌ MongoDB connection error:');
     console.error('Error name:', err.name);
     console.error('Error message:', err.message);
     
-    // Specific error hints
-    if (err.message.includes('authentication failed')) {
+    if (err.message && err.message.includes('authentication failed')) {
       console.error('💡 Check: Username, password (URL-encoded), and user permissions');
     }
-    if (err.message.includes('ENOTFOUND')) {
+    if (err.message && err.message.includes('ENOTFOUND')) {
       console.error('💡 Check: Cluster URL is correct');
     }
     
