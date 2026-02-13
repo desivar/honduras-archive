@@ -37,7 +37,7 @@ const upload = multer({ storage });
 const connectDB = async () => {
   try {
     // Log connection attempt (hide password)
-    const urlWithoutPassword = process.env.MONGO_URL.replace(/:([^@]+)@/, ':****@');
+    const uriWithoutPassword = process.env.MONGO_URL.replace(/:([^@]+)@/, ':****@');
     console.log('🔄 Attempting MongoDB connection to:', uriWithoutPassword);
     
     await mongoose.connect(process.env.MONGO_URL, {
