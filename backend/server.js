@@ -35,21 +35,18 @@ const storage = new CloudinaryStorage({
 }); 
 const upload = multer({ storage: storage });
 
-// 4. DATABASE CONNECTION & SERVER START
+// 4 & 7. CONNECT FIRST, THEN START SERVER
 mongoose.connect(process.env.MONGO_URI, {
-  serverSelectionTimeoutMS: 30000, // Give it 30 seconds to find Atlas on wake-up
+  serverSelectionTimeoutMS: 45000 // Give it 45 seconds to wake up
 }) 
-  .then(() => {
-    console.log("✅ Connected to MongoDB Atlas");
-    
-    // 7. START SERVER (Now inside the .then block)
-    const PORT = process.env.PORT || 10000; 
-    app.listen(PORT, () => { 
-      console.log(`🚀 Server is LIVE and Connected to DB on port ${PORT}`); 
-    });
-  }) 
-  .catch(err => {
-    console.error("❌ MongoDB Connection Error:", err.message);
-    // If the DB fails, don't even start the server
-    process.exit(1); 
+.then(() => {
+  console.log("✅ Connected to MongoDB Atlas");
+  const PORT = process.env.PORT || 10000; 
+  app.listen(PORT, () => { 
+    console.log(`🚀 Server is LIVE on port ${PORT}`); 
   });
+}) 
+.catch(err => {
+  console.error("❌ MongoDB Connection Error:", err.message);
+  process.exit(1); // Stop if the connection fails
+});
