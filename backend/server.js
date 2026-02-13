@@ -44,89 +44,35 @@ const upload = multer({ storage: storage });
 
 // 4. DATABASE CONNECTION 
 
+// 4. DATABASE CONNECTION
+// Change 'testUri' to 'process.env.MONGO_URI'
+mongoose.connect(process.env.MONGO_URI, {
+  serverSelectionTimeoutMS: 30000,
+  bufferCommands: false // Stops the 10-second "ghost" timeout
+}) 
+.then(() => {
+  console.log("✅ Connected to MongoDB Atlas");
 
-mongoose.connect(testUri)
-  .then(() => console.log("✅ Connected to MongoDB Atlas")) 
-  .catch(err => {
-    console.error("❌ MongoDB Connection Error:", err.message);
+  // 6. ROUTES (Move your routes inside the .then block)
+  app.use('/api/auth', authRoutes);
+
+  app.get('/', (req, res) => res.send('Honduras Archive Backend is online!'));
+
+  app.post('/api/archive', upload.single('image'), async (req, res) => {
+      // ... your existing upload logic ...
   });
-// 5. SCHEMAS & MODELS
-const archiveSchema = new mongoose.Schema({ 
-  names: [String], 
-  eventDate: String, 
-  location: String,
-  category: String, 
-  transcription: String, 
-  imageUrl: String, 
-  pdfName: String,
-  pageNumber: String, 
-  userId: String 
-}, { timestamps: true });
 
-const ArchiveItem = mongoose.model('ArchiveItem', archiveSchema);
+  app.get('/api/archive', async (req, res) => {
+      // ... your existing get logic ...
+  });
 
-// 6. ROUTES
-// Root Route 
-app.get('/', (req, res) => { 
-  res.send('Honduras Archive Backend is online!'); 
-});
-
-// Auth Routes (Login)
-app.use('/api/auth', authRoutes);
-
-// Archive Upload Route
-app.post('/api/archive', upload.single('image'), async (req, res) => { 
-  try { 
-    const namesArray = JSON.parse(req.body.names); 
-    const newItem = new ArchiveItem({ 
-      names: namesArray, 
-      eventDate: req.body.eventDate,
-      location: req.body.location, 
-      category: req.body.category, 
-      transcription: req.body.transcription, 
-      pdfName: req.body.pdfName, 
-      pageNumber: req.body.pageNumber, 
-      userId: req.body.userId, 
-      imageUrl: req.file ? req.file.path : '' 
-    }); 
-    await newItem.save(); 
-    res.status(201).json({ success: true, message: "Item saved!" });
-  } catch (err) { 
-    console.error("Upload Error:", err); 
-    res.status(500).json({ success: false, error: err.message }); 
-  } 
-});
-// ADD THESE NEW ROUTES HERE ⬇️
-
-// Get all archive items
-app.get('/api/archive', async (req, res) => {
-  try {
-    const items = await ArchiveItem.find().sort({ createdAt: -1 });
-    res.json({ success: true, data: items });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// Search archive items
-app.get('/api/archive/search', async (req, res) => {
-  try {
-    const { query } = req.query;
-    const items = await ArchiveItem.find({
-      $or: [
-        { names: { $regex: query, $options: 'i' } },
-        { location: { $regex: query, $options: 'i' } },
-        { transcription: { $regex: query, $options: 'i' } }
-         ]
-    });
-    res.json({ success: true, data: items });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// 7. START SERVER (Always at the very bottom)
-const PORT = process.env.PORT || 10000; 
-app.listen(PORT, () => { 
-  console.log(`🚀 Server is LIVE on port ${PORT}`);
+  // 7. START SERVER (Only after DB is ready)
+  const PORT = process.env.PORT || 10000; 
+  app.listen(PORT, () => { 
+    console.log(`🚀 Server is LIVE on port ${PORT}`);
+  });
+}) 
+.catch(err => {
+  console.error("❌ MongoDB Connection Error:", err.message);
+  // This will tell us if it's a password (Bad Auth) or an IP block
 });
