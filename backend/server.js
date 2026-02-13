@@ -16,8 +16,7 @@ app.use(cors({
   credentials: true
 }));
 
-// START SERVER FIRST 
-const PORT = process.env.PORT || 10000; app.listen(PORT, () => { console.log(`Server is LIVE on port ${PORT}`); });
+
 
 // ROOT ROUTE 
 app.get('/', (req, res) => { res.send('Honduras Archive Backend is online!'); });
@@ -60,3 +59,8 @@ app.post('/api/archive',
           { success: false, error: err.message }); } });
 
 app.use('/api/auth', authRoutes);
+
+const PORT = process.env.PORT || 10000; 
+app.listen(PORT, () => { 
+  console.log(`Server is LIVE on port ${PORT}`); 
+});
