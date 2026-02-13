@@ -14,7 +14,7 @@ const app = express();
 // 2. MIDDLEWARE
 app.use(express.json());
 app.use(cors({
-  origin: 'https://honduras-archive.onrender.com', // Your frontend URL
+  origin: 'https://honduras-archive-1.onrender.com', // Your STATIC site URL
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
