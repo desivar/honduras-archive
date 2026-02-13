@@ -86,6 +86,34 @@ app.post('/api/archive', upload.single('image'), async (req, res) => {
     res.status(500).json({ success: false, error: err.message }); 
   } 
 });
+// ADD THESE NEW ROUTES HERE ⬇️
+
+// Get all archive items
+app.get('/api/archive', async (req, res) => {
+  try {
+    const items = await ArchiveItem.find().sort({ createdAt: -1 });
+    res.json({ success: true, data: items });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Search archive items
+app.get('/api/archive/search', async (req, res) => {
+  try {
+    const { query } = req.query;
+    const items = await ArchiveItem.find({
+      $or: [
+        { names: { $regex: query, $options: 'i' } },
+        { location: { $regex: query, $options: 'i' } },
+        { transcription: { $regex: query, $options: 'i' } }
+         ]
+    });
+    res.json({ success: true, data: items });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 // 7. START SERVER (Always at the very bottom)
 const PORT = process.env.PORT || 10000; 
