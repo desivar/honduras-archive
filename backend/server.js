@@ -43,8 +43,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage: storage });
 
 // 4. DATABASE CONNECTION 
-// TEMPORARY TEST - hardcoded connection
-const testUri = 'mongodb+srv://jilliandesire:bueno836@cluster0.0xhod.mongodb.net/honduras_archive?retryWrites=true&w=majority';
+
 
 mongoose.connect(testUri)
   .then(() => console.log("✅ Connected to MongoDB Atlas")) 
