@@ -14,9 +14,9 @@ const CollectionView = () => {
     const fetchCollection = async () => {
       setLoading(true);
       try {
-        // Updated to port 5500 to match your server.js
-        // We use backticks to build the dynamic query
-        const res = await axios.get(`http://localhost:5500/api/search?${type}=${value}`);
+        
+        // Replace localhost with  Render backend URL
+const res = await axios.get(`https://honduras-archive.onrender.com/api/search?${type}=${value}`);
         setResults(res.data);
       } catch (err) {
         console.error("Fetch error:", err);
