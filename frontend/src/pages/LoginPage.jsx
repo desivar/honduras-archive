@@ -21,19 +21,17 @@ const LoginPage = ({ onLogin }) => {
       });
 
       if (response.data.success) {
-        // 1. Store the entire response in localStorage
-        localStorage.setItem('user', JSON.stringify(response.data));
+        // ✅ Store only the user object (not the entire response)
+        const userData = response.data.user;
+        localStorage.setItem('user', JSON.stringify(userData));
         
-        // 2. Update the parent (App.jsx) state
+        // ✅ Pass only the user data to App.jsx
         if (onLogin) {
-          onLogin(response.data);
+          onLogin(userData);
         }
 
-        // 3. Extract the role correctly from response.data.user.role
-        const userRole = response.data.user?.role; 
-
-        // 4. Redirect based on role
-        if (userRole === 'admin') {
+        // ✅ Now role is directly accessible
+        if (userData.role === 'admin') {
           navigate('/upload');
         } else {
           navigate('/');
