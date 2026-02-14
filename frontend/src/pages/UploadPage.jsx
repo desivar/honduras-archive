@@ -7,16 +7,14 @@ const UploadPage = () => {
   const [user, setUser] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  
-  // Multiple names array
-  const [names, setNames] = useState([{ fullName: '' }]);
-  
   const [formData, setFormData] = useState({
+    fullName: '',
     eventDate: '',
     location: '',
     category: 'News',
     recordType: '',
     transcription: '',
+    newspaperName: '', // NEW: Newspaper/Magazine name
     pdfName: '',
     pageNumber: '',
     pdfLink: ''
@@ -59,25 +57,15 @@ const UploadPage = () => {
       ...formData,
       [name]: value
     });
-  };
 
-  // Handle name changes
-  const handleNameChange = (index, value) => {
-    const updatedNames = [...names];
-    updatedNames[index].fullName = value;
-    setNames(updatedNames);
-  };
-
-  // Add new name field
-  const addNameField = () => {
-    setNames([...names, { fullName: '' }]);
-  };
-
-  // Remove name field
-  const removeNameField = (index) => {
-    if (names.length > 1) {
-      const updatedNames = names.filter((_, i) => i !== index);
-      setNames(updatedNames);
+    if (name === 'category') {
+      if (['Birth News', 'Death News', 'Marriage News'].includes(value)) {
+        setFormData(prev => ({
+          ...prev,
+          category: value,
+          recordType: value
+        }));
+      }
     }
   };
 
@@ -89,18 +77,11 @@ const UploadPage = () => {
       return;
     }
 
-    // Validate at least one name is provided
-    const validNames = names.filter(n => n.fullName.trim() !== '');
-    if (validNames.length === 0) {
-      alert('Please provide at least one name');
-      return;
-    }
-
     setUploading(true);
 
     try {
       // Prepare names array
-      const namesArray = validNames.map(n => n.fullName.trim());
+      const namesArray = formData.fullName.split(',').map(name => name.trim());
 
       // Prepare FormData for multipart upload
       const data = new FormData();
@@ -111,6 +92,7 @@ const UploadPage = () => {
       data.append('category', formData.category);
       data.append('recordType', formData.recordType || formData.category);
       data.append('transcription', formData.transcription);
+      data.append('newspaperName', formData.newspaperName); // NEW
       data.append('pdfName', formData.pdfName);
       data.append('pageNumber', formData.pageNumber);
       data.append('pdfLink', formData.pdfLink);
@@ -124,16 +106,17 @@ const UploadPage = () => {
       
       // Reset form
       setFormData({
+        fullName: '',
         eventDate: '',
         location: '',
         category: 'News',
         recordType: '',
         transcription: '',
+        newspaperName: '',
         pdfName: '',
         pageNumber: '',
         pdfLink: ''
       });
-      setNames([{ fullName: '' }]);
       setImageFile(null);
       setImagePreview(null);
       
@@ -161,7 +144,7 @@ const UploadPage = () => {
         <p style={{ color: '#666', marginBottom: '30px' }}>Logged in as: <strong>{user.username}</strong> (Admin)</p>
 
         {success && (
-          <div style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '15px', borderRadius: '8px', marginBottom: '25px', textAlign: 'center', fontWeight: 'bold' }}>
+          <div style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', padding: '15px', borderRadius: '8px', marginBottom: '25px', textAlign: 'center' }}>
             ✓ Record added successfully!
           </div>
         )}
@@ -170,137 +153,34 @@ const UploadPage = () => {
           
           {/* Image Upload */}
           <div style={{ marginBottom: '25px' }}>
-            <label style={{ display: 'block', color: '#737958', marginBottom: '10px', fontWeight: 'bold', fontSize: '1.05rem' }}>
-              📷 Upload Clipping/Portrait Image *
-            </label>
-            {imagePreview && (
-              <img 
-                src={imagePreview} 
-                alt="Preview" 
-                style={{ 
-                  maxWidth: '100%', 
-                  maxHeight: '300px', 
-                  marginBottom: '15px', 
-                  borderRadius: '8px',
-                  border: '2px solid #ddd'
-                }} 
-              />
-            )}
-            <input 
-              type="file" 
-              accept="image/*" 
-              required 
-              onChange={handleImageChange} 
-              style={{ 
-                width: '100%', 
-                padding: '12px',
-                border: '2px solid #ddd',
-                borderRadius: '6px'
-              }} 
-            />
+            <label style={{ display: 'block', color: '#737958', marginBottom: '10px', fontWeight: 'bold' }}>Upload Clipping/Portrait Image *</label>
+            {imagePreview && <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '300px', marginBottom: '15px', borderRadius: '8px' }} />}
+            <input type="file" accept="image/*" required onChange={handleImageChange} style={{ width: '100%', padding: '12px' }} />
           </div>
 
-          {/* Names Section */}
-          <div style={{ 
-            marginBottom: '25px', 
-            padding: '20px', 
-            backgroundColor: '#f5f5f5', 
-            borderRadius: '8px' 
-          }}>
-            <label style={{ 
-              display: 'block', 
-              color: '#737958', 
-              marginBottom: '15px', 
-              fontWeight: 'bold', 
-              fontSize: '1.05rem' 
-            }}>
-              👤 Person Names *
+          {/* Full Name */}
+          <div style={{ marginBottom: '20px' }}>
+            <label style={{ display: 'block', color: '#737958', marginBottom: '8px', fontWeight: 'bold' }}>
+              Full Name of Person(s) *
             </label>
-            
-            {names.map((name, index) => (
-              <div key={index} style={{ 
-                display: 'flex', 
-                gap: '10px', 
-                marginBottom: '12px',
-                alignItems: 'center'
-              }}>
-                <input
-                  type="text"
-                  value={name.fullName}
-                  onChange={(e) => handleNameChange(index, e.target.value)}
-                  placeholder={`Person ${index + 1} Full Name`}
-                  required={index === 0}
-                  style={{
-                    flex: 1,
-                    padding: '12px',
-                    border: '2px solid #ddd',
-                    borderRadius: '6px',
-                    fontSize: '1rem'
-                  }}
-                />
-                {names.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeNameField(index)}
-                    style={{
-                      backgroundColor: '#d32f2f',
-                      color: 'white',
-                      border: 'none',
-                      padding: '12px 16px',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      fontWeight: 'bold'
-                    }}
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-            ))}
-            
-            <button
-              type="button"
-              onClick={addNameField}
-              style={{
-                backgroundColor: '#4caf50',
-                color: 'white',
-                border: 'none',
-                padding: '10px 20px',
-                borderRadius: '6px',
-                cursor: 'pointer',
-                fontWeight: 'bold',
-                marginTop: '10px'
-              }}
-            >
-              ➕ Add Another Person
-            </button>
-            <p style={{ 
-              fontSize: '0.85rem', 
-              color: '#666', 
-              marginTop: '10px',
-              fontStyle: 'italic'
-            }}>
-              For marriages, births with parents, or group photos - add multiple names
-            </p>
+            <input 
+              type="text" 
+              name="fullName" 
+              required 
+              value={formData.fullName} 
+              onChange={handleChange} 
+              placeholder="For multiple people, separate with commas: Juan Pérez, María López"
+              style={{ width: '100%', padding: '12px', border: '2px solid #ddd', borderRadius: '6px' }} 
+            />
+            <small style={{ color: '#666', fontSize: '0.85rem' }}>
+              For marriages or multiple people, separate names with commas
+            </small>
           </div>
 
           {/* Category */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', color: '#737958', marginBottom: '8px', fontWeight: 'bold' }}>
-              📁 Category *
-            </label>
-            <select 
-              name="category" 
-              value={formData.category} 
-              onChange={handleChange} 
-              style={{ 
-                width: '100%', 
-                padding: '12px', 
-                border: '2px solid #ddd', 
-                borderRadius: '6px',
-                fontSize: '1rem'
-              }}
-            >
+            <label style={{ display: 'block', color: '#737958', marginBottom: '8px', fontWeight: 'bold' }}>Category *</label>
+            <select name="category" value={formData.category} onChange={handleChange} style={{ width: '100%', padding: '12px', border: '2px solid #ddd', borderRadius: '6px' }}>
               <option value="News">News / Clipping</option>
               <option value="Portrait">Portrait / Photo</option>
               <option value="Birth">Birth News</option>
@@ -312,132 +192,67 @@ const UploadPage = () => {
           {/* Date & Location */}
           <div style={{ display: 'flex', gap: '20px', marginBottom: '20px' }}>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', color: '#737958', marginBottom: '8px', fontWeight: 'bold' }}>
-                📅 Date *
-              </label>
-              <input 
-                type="text" 
-                name="eventDate" 
-                required 
-                value={formData.eventDate} 
-                onChange={handleChange} 
-                placeholder="e.g., 1945-06-15 or June 1945"
-                style={{ 
-                  width: '100%', 
-                  padding: '12px', 
-                  border: '2px solid #ddd', 
-                  borderRadius: '6px' 
-                }} 
-              />
+              <label style={{ display: 'block', color: '#737958', marginBottom: '8px', fontWeight: 'bold' }}>Date *</label>
+              <input type="text" name="eventDate" required value={formData.eventDate} onChange={handleChange} placeholder="e.g., 1945-06-15" style={{ width: '100%', padding: '12px', border: '2px solid #ddd', borderRadius: '6px' }} />
             </div>
             <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', color: '#737958', marginBottom: '8px', fontWeight: 'bold' }}>
-                📍 Location *
-              </label>
-              <input 
-                type="text" 
-                name="location" 
-                required 
-                value={formData.location} 
-                onChange={handleChange} 
-                placeholder="e.g., Tegucigalpa, Honduras"
-                style={{ 
-                  width: '100%', 
-                  padding: '12px', 
-                  border: '2px solid #ddd', 
-                  borderRadius: '6px' 
-                }} 
-              />
+              <label style={{ display: 'block', color: '#737958', marginBottom: '8px', fontWeight: 'bold' }}>Location *</label>
+              <input type="text" name="location" required value={formData.location} onChange={handleChange} placeholder="e.g., Tegucigalpa" style={{ width: '100%', padding: '12px', border: '2px solid #ddd', borderRadius: '6px' }} />
             </div>
           </div>
 
           {/* PDF Source */}
-          <div style={{ 
-            backgroundColor: '#fff9e6', 
-            padding: '20px', 
-            borderRadius: '8px', 
-            marginBottom: '20px',
-            border: '1px solid #f0e68c'
-          }}>
-            <h3 style={{ 
-              color: '#737958', 
-              marginBottom: '15px',
-              fontSize: '1rem'
-            }}>
-              📄 Source Information (Optional)
+          <div style={{ backgroundColor: '#fff9e6', padding: '20px', borderRadius: '8px', marginBottom: '20px' }}>
+            <h3 style={{ color: '#737958', marginTop: 0, marginBottom: '15px', fontSize: '1rem' }}>
+              Source Information
             </h3>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>
-              PDF Filename
-            </label>
+            
+            {/* NEW: Newspaper/Magazine Name */}
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Newspaper/Magazine Name</label>
+            <input 
+              type="text" 
+              name="newspaperName" 
+              value={formData.newspaperName} 
+              onChange={handleChange} 
+              placeholder="e.g., La Prensa, El Heraldo, Revista Tegucigalpa"
+              style={{ width: '100%', padding: '10px', marginBottom: '15px', border: '1px solid #ddd', borderRadius: '4px' }} 
+            />
+            
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>PDF Filename</label>
             <input 
               type="text" 
               name="pdfName" 
               value={formData.pdfName} 
               onChange={handleChange} 
               placeholder="e.g., La_Prensa_1945_06.pdf"
-              style={{ 
-                width: '100%', 
-                padding: '10px', 
-                marginBottom: '15px',
-                border: '1px solid #ddd',
-                borderRadius: '4px'
-              }} 
+              style={{ width: '100%', padding: '10px', marginBottom: '10px', border: '1px solid #ddd', borderRadius: '4px' }} 
             />
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#666' }}>
-              Page Number
-            </label>
+            
+            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold' }}>Page Number</label>
             <input 
               type="text" 
               name="pageNumber" 
               value={formData.pageNumber} 
               onChange={handleChange} 
               placeholder="e.g., 12"
-              style={{ 
-                width: '100%', 
-                padding: '10px',
-                border: '1px solid #ddd',
-                borderRadius: '4px'
-              }} 
+              style={{ width: '100%', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }} 
             />
           </div>
 
           {/* Transcription */}
           <div style={{ marginBottom: '25px' }}>
-            <label style={{ display: 'block', color: '#737958', marginBottom: '8px', fontWeight: 'bold' }}>
-              📝 Transcription (Optional)
-            </label>
+            <label style={{ display: 'block', color: '#737958', marginBottom: '8px', fontWeight: 'bold' }}>Transcription</label>
             <textarea 
               name="transcription" 
               rows="6" 
               value={formData.transcription} 
               onChange={handleChange} 
               placeholder="Type the text from the newspaper clipping here..."
-              style={{ 
-                width: '100%', 
-                padding: '12px', 
-                border: '2px solid #ddd', 
-                borderRadius: '6px',
-                fontSize: '1rem',
-                fontFamily: 'inherit'
-              }} 
+              style={{ width: '100%', padding: '12px', border: '2px solid #ddd', borderRadius: '6px' }} 
             />
           </div>
 
-          <button 
-            type="submit" 
-            disabled={uploading} 
-            style={{ 
-              width: '100%', 
-              backgroundColor: uploading ? '#999' : '#737958', 
-              color: 'white', 
-              padding: '16px', 
-              borderRadius: '8px', 
-              fontWeight: 'bold', 
-              border: 'none',
-              fontSize: '1.1rem',
-              cursor: uploading ? 'not-allowed' : 'pointer'
-            }}
-          >
+          <button type="submit" disabled={uploading} style={{ width: '100%', backgroundColor: uploading ? '#999' : '#737958', color: 'white', padding: '16px', borderRadius: '8px', fontWeight: 'bold', border: 'none', cursor: uploading ? 'not-allowed' : 'pointer' }}>
             {uploading ? '⏳ Adding to Archive...' : '✅ Add to Archive'}
           </button>
         </form>
