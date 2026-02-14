@@ -2,12 +2,15 @@ import React from 'react';
 
 const ResultCard = ({ record }) => {
   
-  // 1. Function to create the APA Citation string
+  // ✅ FIXED: Handle names array from backend
+  const displayName = Array.isArray(record.names) 
+    ? record.names.join(', ') 
+    : record.fullName || 'Unknown';
+  
   const copyCitation = () => {
-    const { fullName, eventDate, category, location, pdfLink, pageNumber } = record;
+    const { eventDate, category, location, pdfLink, pageNumber } = record;
     
-    // Format: Name (Year). Category. Location: Source, p. X.
-    const citation = `${fullName} (${eventDate || 'n.d.'}). ${category}. ${location || 'Honduras'}: ${pdfLink || 'Archive Document'}, p. ${pageNumber || 's/n'}.`;
+    const citation = `${displayName} (${eventDate || 'n.d.'}). ${category}. ${location || 'Honduras'}: ${pdfLink || 'Archive Document'}, p. ${pageNumber || 's/n'}.`;
     
     navigator.clipboard.writeText(citation);
     alert("APA Citation copied to clipboard!");
@@ -20,24 +23,36 @@ const ResultCard = ({ record }) => {
       marginBottom: '20px', 
       borderRadius: '8px', 
       boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
-      border: '1px solid #737958'
+      border: '2px solid #737958'
     }}>
-      {/* 2. Fixed Image: Cloudinary URLs are already full links, so we use record.imageUrl directly */}
       {record.imageUrl && (
         <img 
           src={record.imageUrl} 
-          alt={record.fullName} 
-          style={{ width: '100%', borderRadius: '4px', marginBottom: '15px', display: 'block', maxHeight: '300px', objectFit: 'cover' }} 
+          alt={displayName} 
+          style={{ 
+            width: '100%', 
+            borderRadius: '4px', 
+            marginBottom: '15px', 
+            display: 'block', 
+            maxHeight: '300px', 
+            objectFit: 'cover' 
+          }} 
         />
       )}
       
-      <h3 style={{ color: '#737958', margin: '0 0 10px 0' }}>{record.fullName}</h3>
+      <h3 style={{ color: '#737958', margin: '0 0 10px 0', fontSize: '1.3rem' }}>
+        {displayName}
+      </h3>
       
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', fontSize: '0.9rem' }}>
-        <p><strong>Category:</strong> {record.category}</p>
-        <p><strong>Date:</strong> {record.eventDate}</p>
-        <p><strong>Location:</strong> {record.location}</p>
-        <p><strong>Source:</strong> {record.pdfLink} (Pg. {record.pageNumber})</p>
+      <div style={{ fontSize: '0.9rem', color: '#333' }}>
+        <p style={{ marginBottom: '8px' }}><strong>Category:</strong> {record.category}</p>
+        <p style={{ marginBottom: '8px' }}><strong>Date:</strong> {record.eventDate}</p>
+        <p style={{ marginBottom: '8px' }}><strong>Location:</strong> {record.location}</p>
+        {record.pdfLink && (
+          <p style={{ marginBottom: '8px' }}>
+            <strong>Source:</strong> {record.pdfLink} {record.pageNumber && `(Pg. ${record.pageNumber})`}
+          </p>
+        )}
       </div>
 
       <button 
@@ -45,13 +60,14 @@ const ResultCard = ({ record }) => {
         style={{
           marginTop: '15px',
           width: '100%',
-          padding: '10px',
+          padding: '12px',
           backgroundColor: '#737958',
           color: 'white',
           border: 'none',
           borderRadius: '4px',
           cursor: 'pointer',
-          fontWeight: 'bold'
+          fontWeight: 'bold',
+          fontSize: '0.95rem'
         }}
       >
         📄 Copy APA Citation
