@@ -8,42 +8,42 @@ import RecordDetail from './pages/RecordDetail';
 import Login from './pages/LoginPage';
 import Register from './pages/Register';
 import Contact from './pages/Contact';
+import AdminPanel from './pages/AdminPanel'; // Your new user management page
 
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-
   useEffect(() => {
-    // 1. Get the string from storage
     const storedUser = localStorage.getItem('user');
-    
     if (storedUser) {
       try {
-        // 2. Turn the string back into an object
         const parsedUser = JSON.parse(storedUser);
-        
-        // 3. Update the state (this is where your error is)
-        setUser(parsedUser); 
-        console.log('User loaded:', parsedUser);
+        setUser(parsedUser);
+        console.log('User session restored:', parsedUser.username);
       } catch (err) {
-        console.error('Error parsing user:', err);
+        console.error('Error parsing user session:', err);
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
       }
     }
     setLoading(false);
-  }, []); // 🟢 Make sure these brackets and parentheses are closed!
+  }, []);
 
   const handleLogin = (userData) => {
-    console.log('Login successful:', userData);
+    // userData should include { username, role, token } from your backend
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    if (userData.token) {
+      localStorage.setItem('token', userData.token);
+    }
   };
 
   const handleLogout = () => {
-    console.log('Logging out');
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
+    console.log('User logged out');
   };
 
   if (loading) {
@@ -55,37 +55,39 @@ function App() {
         height: '100vh',
         backgroundColor: '#EFE7DD'
       }}>
-        <p style={{ fontSize: '1.2rem', color: '#737958' }}>Loading...</p>
+        <p style={{ fontSize: '1.2rem', color: '#737958', fontWeight: 'bold' }}>
+          Cargando Archivo...
+        </p>
       </div>
     );
   }
 
   return (
     <Router>
-      <div style={{ display: 'flex' }}>
+      <div style={{ display: 'flex', backgroundColor: '#EFE7DD', minHeight: '100vh' }}>
+        {/* Sidebar always visible, handles role-based links internally */}
         <Sidebar user={user} onLogout={handleLogout} />
         
         <div style={{ 
-          marginLeft: '300px', 
+          marginLeft: '300px', // Matches your Sidebar width
           flex: 1,
-          minHeight: '100vh'
+          padding: '20px'
         }}>
           <Routes>
-            {/* Public Routes */}
+            {/* --- Public Routes --- */}
             <Route path="/" element={<SearchPage />} />
             <Route path="/record/:id" element={<RecordDetail />} />
             <Route path="/contact" element={<Contact />} />
             
-            {/* Auth Routes */}
+            {/* --- Auth Routes --- */}
             <Route 
               path="/login" 
-              element={
-                user ? <Navigate to="/" replace /> : <Login onLogin={handleLogin} />
-              } 
+              element={user ? <Navigate to="/" replace /> : <Login onLogin={handleLogin} />} 
             />
             <Route path="/register" element={<Register />} />
             
-            {/* Admin Routes - Protected */}
+            {/* --- Admin/Collaborator Routes --- */}
+            {/* Only allow users with 'admin' role to access these */}
             <Route 
               path="/upload" 
               element={
@@ -97,10 +99,24 @@ function App() {
               } 
             />
 
-            {/* Collection & Filter Routes */}
+            <Route 
+              path="/admin" 
+              element={
+                user && user.role === 'admin' ? (
+                  <AdminPanel />
+                ) : (
+                  <Navigate to="/login" replace />
+                )
+              } 
+            />
+
+            {/* --- Archive Navigation Routes --- */}
             <Route path="/category/:value" element={<CollectionView type="category" />} />
             <Route path="/type/:value" element={<CollectionView type="recordType" />} />
             <Route path="/alpha/:value" element={<CollectionView type="letter" />} />
+
+            {/* Catch-all redirect */}
+            <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
       </div>

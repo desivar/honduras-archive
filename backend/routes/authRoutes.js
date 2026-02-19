@@ -57,5 +57,29 @@ router.post('/login', async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
+router.get('/users', async (req, res) => {
+  try {
+    // This finds every user but hides their passwords for safety
+    const users = await User.find().select('-password'); 
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error fetching users" });
+  }
+});
+
+// 🟢 ADD THE "CHANGE ROLE" ROUTE HERE (To promote collaborators)
+router.put('/users/role/:id', async (req, res) => {
+  try {
+    const { role } = req.body; // 'admin', 'client', or 'visitor'
+    const user = await User.findByIdAndUpdate(
+      req.params.id, 
+      { role }, 
+      { new: true }
+    ).select('-password');
+    res.json({ success: true, user });
+  } catch (err) {
+    res.status(500).json({ success: false, message: "Error updating role" });
+  }
+});
 
 module.exports = router;
