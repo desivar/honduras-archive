@@ -32,46 +32,27 @@ const storage = new CloudinaryStorage({
 });
 const upload = multer({ storage });
 
-
-// MongoDB connection with detailed error logging
+// MongoDB connection
 const connectDB = async () => {
   try {
-    if (!process.env.MONGO_URL) {
-      throw new Error('MONGO_URL environment variable is not defined');
-    }
-    
-    const uriWithoutPassword = process.env.MONGO_URL.replace(/:([^@]+)@/, ':****@');
-    console.log('🔄 Attempting MongoDB connection to:', uriWithoutPassword);
-    
-    await mongoose.connect(process.env.MONGO_URL, {
-      serverSelectionTimeoutMS: 5000,
-    });
-    
+    await mongoose.connect(process.env.MONGO_URL);
     console.log('✅ MongoDB connected successfully');
-    
   } catch (err) {
-    console.error('❌ MongoDB connection error:');
-    console.error('Error name:', err.name);
-    console.error('Error message:', err.message);
-    
-    if (err.message && err.message.includes('authentication failed')) {
-      console.error('💡 Check: Username, password (URL-encoded), and user permissions');
-    }
-    if (err.message && err.message.includes('ENOTFOUND')) {
-      console.error('💡 Check: Cluster URL is correct');
-    }
-    
+    console.error('❌ MongoDB connection error:', err.message);
     process.exit(1);
   }
 };
-
 connectDB();
 
-// Archive Schema
+// 🟢 UPDATED Archive Schema (Added Names and FullText)
 const archiveSchema = new mongoose.Schema({
   title: String,
+  names: [String],      // 👈 Allows multiple people: ["Juan", "Maria"]
   description: String,
+  fullText: String,     // 👈 For those large news articles
   category: String,
+  location: String,
+  eventDate: String,
   imageUrl: String,
   cloudinaryId: String,
   createdAt: { type: Date, default: Date.now }
@@ -88,14 +69,15 @@ app.get('/', (req, res) => {
 // Upload
 app.post('/api/archive', upload.single('image'), async (req, res) => {
   try {
-    const { title, description, category } = req.body;
-    
+    // We handle names as an array (frontend should send it as a JSON string if using FormData)
+    let namesArray = req.body.names;
+    if (typeof namesArray === 'string') namesArray = JSON.parse(namesArray);
+
     const item = new Archive({
-      title,
-      description,
-      category,
-      imageUrl: req.file.path,
-      cloudinaryId: req.file.filename
+      ...req.body,
+      names: namesArray,
+      imageUrl: req.file ? req.file.path : null,
+      cloudinaryId: req.file ? req.file.filename : null
     });
     
     await item.save();
@@ -105,22 +87,46 @@ app.post('/api/archive', upload.single('image'), async (req, res) => {
   }
 });
 
-// Get all
-app.get('/api/archive', async (req, res) => {
+// 🟢 NEW: Update (Edit) Route
+app.put('/api/archive/:id', async (req, res) => {
   try {
-    const items = await Archive.find().sort({ createdAt: -1 });
-    res.json(items);
+    const { title, names, description, fullText, category, location, eventDate } = req.body;
+    
+    // Convert names back to array if needed
+    let namesArray = names;
+    if (typeof namesArray === 'string') namesArray = JSON.parse(namesArray);
+
+    const updatedItem = await Archive.findByIdAndUpdate(
+      req.params.id,
+      { title, names: namesArray, description, fullText, category, location, eventDate },
+      { new: true } // Returns the updated document
+    );
+
+    if (!updatedItem) return res.status(404).json({ error: 'Item not found' });
+    res.json(updatedItem);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-// Get one
-app.get('/api/archive/:id', async (req, res) => {
+// Get all (Updated search logic)
+app.get('/api/archive', async (req, res) => {
   try {
-    const item = await Archive.findById(req.params.id);
-    if (!item) return res.status(404).json({ error: 'Not found' });
-    res.json(item);
+    const { search } = req.query;
+    let query = {};
+
+    if (search) {
+      query = {
+        $or: [
+          { names: { $regex: search, $options: 'i' } },
+          { title: { $regex: search, $options: 'i' } },
+          { fullText: { $regex: search, $options: 'i' } }
+        ]
+      };
+    }
+
+    const items = await Archive.find(query).sort({ createdAt: -1 });
+    res.json(items);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
