@@ -48,7 +48,7 @@ connectDB();
 const archiveSchema = new mongoose.Schema({
   title: String,
   names: [String],      // 👈 Allows multiple people: ["Juan", "Maria"]
-  description: String,
+  summary: String,
   fullText: String,     // 👈 For those large news articles
   category: String,
   location: String,
@@ -109,7 +109,7 @@ app.put('/api/archive/:id', async (req, res) => {
       { 
         title, 
         names: namesArray, 
-        description, 
+      
         fullText, 
         category, 
         location, 
@@ -137,7 +137,7 @@ app.get('/api/archive', async (req, res) => {
       query = { $or: [
         { names: { $regex: search, $options: 'i' } },
         { countryOfOrigin: { $regex: search, $options: 'i' } }, // 👈 Now searchable
-        { transcription: { $regex: search, $options: 'i' } }
+        { summary: { $regex: search, $options: 'i' } }
       ]};
     } else if (letter) {
       query = { names: { $elemMatch: { $regex: `^${letter}`, $options: 'i' } } };
