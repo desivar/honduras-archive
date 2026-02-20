@@ -6,8 +6,6 @@ const SearchPage = () => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-  
-  
 
   useEffect(() => {
     fetchAllRecords();
@@ -17,11 +15,8 @@ const SearchPage = () => {
     setLoading(true);
     try {
       const response = await axios.get('https://honduras-archive.onrender.com/api/archive');
-      
-      // ✅ FIX: Extract .items for the results array
+      // ✅ Using .items to match your new backend format
       setResults(response.data.items || []);
-      
-      
     } catch (error) {
       console.error("Error loading archive:", error);
       setResults([]);
@@ -40,12 +35,8 @@ const SearchPage = () => {
     setLoading(true);
     try {
       const response = await axios.get(`https://honduras-archive.onrender.com/api/archive?search=${query}`);
-      
-      // ✅ FIX: Extract .items here too
+      // ✅ Using .items here as well
       setResults(response.data.items || []);
-      
-      // (Optional) Update total count if your search returns it
-      setTotalCount(response.data.totalCount || 0);
     } catch (error) {
       console.error("Error fetching from database:", error);
       setResults([]);
@@ -57,17 +48,7 @@ const SearchPage = () => {
   return (
     <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto', backgroundColor: '#EFE7DD', minHeight: '100vh' }}>
       
-      {/* 📊 Magnitude Display: This shows your RMU standards in action */}
-      <div style={{ marginBottom: '20px', padding: '15px', backgroundColor: '#fff', borderRadius: '8px', borderLeft: '5px solid #737958' }}>
-        <p style={{ margin: 0, color: '#737958', fontWeight: 'bold' }}>
-          Magnitud del Archivo: {totalCount} Registros
-        </p>
-        {lastUpdate && (
-          <small style={{ color: '#999' }}>
-            Última actualización: {new Date(lastUpdate).toLocaleDateString()}
-          </small>
-        )}
-      </div>
+      {/* 🧹 Removed the Magnitude box from here since it's moving to the Sidebar */}
 
       <h1 style={{ color: '#737958', marginBottom: '20px', fontSize: '2.5rem' }}>Recuerdos de Honduras</h1>
       
