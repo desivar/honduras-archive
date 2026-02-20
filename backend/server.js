@@ -53,6 +53,10 @@ const archiveSchema = new mongoose.Schema({
   category: String,
   location: String,
   eventDate: String,
+  newspaperName: String, 
+  pageNumber: String,
+  transcription: String,
+
   imageUrl: String,
   cloudinaryId: String,
   createdAt: { type: Date, default: Date.now }
@@ -90,25 +94,36 @@ app.post('/api/archive', upload.single('image'), async (req, res) => {
 // 🟢 NEW: Update (Edit) Route
 app.put('/api/archive/:id', async (req, res) => {
   try {
-    const { title, names, description, fullText, category, location, eventDate } = req.body;
-    
-    // Convert names back to array if needed
+    // We add the new fields here so the 'Edit' button can save them
+    const { 
+      title, names, description, fullText, category, 
+      location, eventDate, newspaperName, pageNumber, transcription 
+    } = req.body; 
+
     let namesArray = names;
     if (typeof namesArray === 'string') namesArray = JSON.parse(namesArray);
 
     const updatedItem = await Archive.findByIdAndUpdate(
       req.params.id,
-      { title, names: namesArray, description, fullText, category, location, eventDate },
-      { new: true } // Returns the updated document
+      { 
+        title, 
+        names: namesArray, 
+        description, 
+        fullText, 
+        category, 
+        location, 
+        eventDate,
+        newspaperName, // 👈 This makes it work!
+        pageNumber,    // 👈 This makes it work!
+        transcription  // 👈 This makes it work!
+      },
+      { new: true }
     );
-
-    if (!updatedItem) return res.status(404).json({ error: 'Item not found' });
     res.json(updatedItem);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
 // Get all (Updated search logic)
 app.get('/api/archive', async (req, res) => {
   try {
