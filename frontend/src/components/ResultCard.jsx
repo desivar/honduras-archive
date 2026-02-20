@@ -59,8 +59,15 @@ alert("APA Citation copied to clipboard!");
               }} 
              />
  )}
-           <h3 style={{ color: '#737958', margin: '0 0 10px 0', fontSize: '1.3rem' }}>
-          {displayName}</h3>
+          <h3 style={{ color: '#737958', margin: '0 0 10px 0', fontSize: '1.3rem' }}>
+  {displayName}
+  {/* If the person has a country of origin, show it in parentheses */}
+  {record.countryOfOrigin && (
+    <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 'normal' }}>
+       (from {record.countryOfOrigin})
+    </span>
+  )}
+</h3>
 
  <div style={{ fontSize: '0.9rem', color: '#333' }}>
  <p style={{ marginBottom: '8px' }}><strong>Category:</strong> {record.category}</p>
