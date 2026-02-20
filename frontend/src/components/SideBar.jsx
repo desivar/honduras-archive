@@ -146,7 +146,15 @@ const Sidebar = ({ user, onLogout }) => {
             📤 Upload New File
           </Link>
         )}
-        
+        {/* Add this right under Home / Search */}
+<Link 
+  to="/about" 
+  style={linkStyle}
+  onMouseEnter={(e) => e.target.style.paddingLeft = '10px'}
+  onMouseLeave={(e) => e.target.style.paddingLeft = '0'}
+>
+  📖 About the Project
+</Link>
         <Link 
           to="/contact" 
           style={linkStyle}
