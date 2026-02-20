@@ -56,7 +56,7 @@ function App() {
         backgroundColor: '#EFE7DD'
       }}>
         <p style={{ fontSize: '1.2rem', color: '#737958', fontWeight: 'bold' }}>
-          Cargando Archivo...
+          Downloading File...
         </p>
       </div>
     );
