@@ -285,18 +285,16 @@ const Sidebar = ({ user, onLogout }) => {
   width: '260px', 
   backgroundColor: '#737958', 
   color: '#EFE7DD', 
-  height: '100vh', // Keeps it full height
+  height: '100vh', 
   padding: '20px', 
   position: 'fixed', 
-  top: 0,      // 👈 Add this to pin it to the very top
-  left: 0,     // 👈 Add this to pin it to the left
-  display: 'flex',           // 👈 Add this
-  flexDirection: 'column',   // 👈 Add this
-  boxSizing: 'border-box',   // 👈 CRITICAL: This includes padding in the 100vh calculation
+  top: 0,
+  left: 0,
+  display: 'flex',
+  flexShrink: 0,
+  flexDirection: 'column',
+  boxSizing: 'border-box', 
   boxShadow: '2px 0 8px rgba(0,0,0,0.1)',
-  overflowY: 'auto'          // Still allows scrolling if the window is very small
-}}>
-  Archive Magnitude: Verified Records
-</div>
-
+  overflowY: 'auto'
+}}></div>
 export default Sidebar;

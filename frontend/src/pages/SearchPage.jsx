@@ -7,9 +7,7 @@ const SearchPage = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   
-  // 🟢 NEW: States for your Magnitude and Refresh data
-  const [totalCount, setTotalCount] = useState(0);
-  const [lastUpdate, setLastUpdate] = useState(null);
+  
 
   useEffect(() => {
     fetchAllRecords();
@@ -23,9 +21,7 @@ const SearchPage = () => {
       // ✅ FIX: Extract .items for the results array
       setResults(response.data.items || []);
       
-      // ✅ NEW: Capture the magnitude data
-      setTotalCount(response.data.totalCount || 0);
-      setLastUpdate(response.data.lastUpdate);
+      
     } catch (error) {
       console.error("Error loading archive:", error);
       setResults([]);
