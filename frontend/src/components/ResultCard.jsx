@@ -1,19 +1,16 @@
 import React from 'react';
-import axios from 'axios'; // 🟢 Added for delete request
+import axios from 'axios';
 
 const ResultCard = ({ record, onDeleteSuccess }) => {
   
-  // 🟢 1. Check if the user is an admin to show Edit/Delete buttons
   const storedUser = localStorage.getItem('user');
   const user = storedUser ? JSON.parse(storedUser) : null;
   const isAdmin = user && user.role === 'admin';
 
-  // ✅ FIXED: Handle names array from backend
   const displayName = Array.isArray(record.names) 
     ? record.names.join(', ') 
     : record.fullName || 'Unknown';
   
-  // 🟢 2. Delete Logic
   const handleDelete = async () => {
     if (window.confirm(`Are you sure you want to delete "${displayName}"?`)) {
       try {
@@ -22,16 +19,22 @@ const ResultCard = ({ record, onDeleteSuccess }) => {
           headers: { 'x-auth-token': token }
         });
         alert("Record deleted successfully");
-        if (onDeleteSuccess) onDeleteSuccess(); // Refreshes the list
+        if (onDeleteSuccess) onDeleteSuccess(); 
       } catch (err) {
         alert("Error deleting record");
       }
     }
   };
 
+  // 🟢 UPDATED: Citation now uses newspaperName and pageNumber
   const copyCitation = () => {
-    const { eventDate, category, location, pdfLink, pageNumber } = record;
-    const citation = `${displayName} (${eventDate || 'n.d.'}). ${category}. ${location || 'Honduras'}: ${pdfLink || 'Archive Document'}, p. ${pageNumber || 's/n'}.`;
+    const { eventDate, category, location, newspaperName, pageNumber } = record;
+    
+    const source = newspaperName || 'Documento de Archivo';
+    const page = pageNumber || 's/n';
+    
+    const citation = `${displayName} (${eventDate || 'n.d.'}). ${category}. ${location || 'Honduras'}: ${source}, p. ${page}.`;
+    
     navigator.clipboard.writeText(citation);
     alert("APA Citation copied to clipboard!");
   };
@@ -67,18 +70,18 @@ const ResultCard = ({ record, onDeleteSuccess }) => {
       <div style={{ fontSize: '0.9rem', color: '#333' }}>
         <p style={{ marginBottom: '8px' }}><strong>Category:</strong> {record.category}</p>
         <p style={{ marginBottom: '8px' }}><strong>Date:</strong> {record.eventDate}</p>
+
+        {/* 🟢 NEW: Displaying the Newspaper and Page Number */}
+        <p style={{ marginBottom: '8px' }}>
+          <strong>Source:</strong> {record.newspaperName || 'Archivo Nacional'} 
+          {record.pageNumber && ` (Pg. ${record.pageNumber})`}
+        </p>
+
         <p style={{ marginBottom: '8px' }}><strong>Location:</strong> {record.location}</p>
         
-        {/* 🟢 3. Added a preview of the "Large News" content */}
         {record.description && (
-          <p style={{ marginBottom: '8px', fontStyle: 'italic' }}>
+          <p style={{ marginBottom: '8px', fontStyle: 'italic', borderTop: '1px solid #eee', paddingTop: '5px' }}>
             {record.description.substring(0, 100)}...
-          </p>
-        )}
-
-        {record.pdfLink && (
-          <p style={{ marginBottom: '8px' }}>
-            <strong>Source:</strong> {record.pdfLink} {record.pageNumber && `(Pg. ${record.pageNumber})`}
           </p>
         )}
       </div>
@@ -101,7 +104,6 @@ const ResultCard = ({ record, onDeleteSuccess }) => {
         📄 Copy APA Citation
       </button>
 
-      {/* 🟢 4. New Admin Buttons: Only show if isAdmin is true */}
       {isAdmin && (
         <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
           <button 
