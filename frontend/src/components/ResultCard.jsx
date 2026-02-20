@@ -57,8 +57,10 @@ const ResultCard = ({ record, onDeleteSuccess }) => {
             borderRadius: '4px', 
             marginBottom: '15px', 
             display: 'block', 
-            maxHeight: '300px', 
-            objectFit: 'cover' 
+            height: 'auto',          // Let the image height be natural
+            objectFit: 'contain',    // Ensure the full image is visible
+            maxHeight: '500px', 
+           
           }} 
         />
       )}
