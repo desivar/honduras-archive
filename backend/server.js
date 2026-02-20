@@ -97,7 +97,7 @@ app.put('/api/archive/:id', async (req, res) => {
   try {
     // We add the new fields here so the 'Edit' button can save them
     const { 
-      title, names, description, fullText, category, 
+      title, names, fullText, category, 
       location, eventDate, newspaperName, pageNumber, summary, countryOfOrigin 
     } = req.body; 
 
