@@ -8,12 +8,13 @@ const UploadPage = () => {
   
   // Form State
   const [names, setNames] = useState("");
+  const [countryOfOrigin, setCountryOfOrigin] = useState(""); // 👈 Add this state
   const [category, setCategory] = useState("Portrait");
   const [eventDate, setEventDate] = useState("");
   const [location, setLocation] = useState("");
   const [newspaperName, setNewspaperName] = useState(""); // 👈 Added Origin
   const [pageNumber, setPageNumber] = useState("");     // 👈 Added Page
-  const [description, setDescription] = useState("");
+  const [summary, setSummary] = useState("");
   const [image, setImage] = useState(null);
 
   const handleSubmit = async (e) => {
@@ -22,12 +23,13 @@ const UploadPage = () => {
 
     const formData = new FormData();
     formData.append('names', names);
+    formData.append('countryOfOrigin', countryOfOrigin);
     formData.append('category', category);
     formData.append('eventDate', eventDate);
     formData.append('location', location);
     formData.append('newspaperName', newspaperName); // 👈 Sent to server
     formData.append('pageNumber', pageNumber);       // 👈 Sent to server
-    formData.append('description', description);
+    formData.append('summary', summary);
     if (image) formData.append('image', image);
 
     try {
@@ -55,7 +57,15 @@ const UploadPage = () => {
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
         <label>Names (separate with commas):</label>
         <input type="text" value={names} onChange={(e) => setNames(e.target.value)} required placeholder="e.g. Sara Gravina, Carlos Izaguirre" style={inputStyle} />
-
+         {/* 🟢 ADD THIS BOX HERE */}
+<label>Person's Origin (e.g. from Italy, from New York):</label>
+<input 
+  type="text" 
+  value={countryOfOrigin} 
+  onChange={(e) => setCountryOfOrigin(e.target.value)} 
+  placeholder="e.g. Italy" 
+  style={inputStyle} 
+/>
         <label>Category:</label>
         <select value={category} onChange={(e) => setCategory(e.target.value)} style={inputStyle}>
           <option value="Portrait">Portrait</option>
@@ -83,8 +93,13 @@ const UploadPage = () => {
           </div>
         </div>
 
-        <label>Description:</label>
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows="4" style={inputStyle} />
+        <label>Summary of Record:</label>
+<textarea 
+  value={summary} // 🟢 Changed from description to summary
+  onChange={(e) => setSummary(e.target.value)} // 🟢 Changed from setDescription
+  rows="4" 
+  style={inputStyle} 
+/>
 
         <label>Upload Image:</label>
         <input type="file" onChange={(e) => setImage(e.target.files[0])} accept="image/*" style={inputStyle} />
