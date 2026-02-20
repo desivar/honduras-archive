@@ -98,7 +98,7 @@ app.put('/api/archive/:id', async (req, res) => {
     // We add the new fields here so the 'Edit' button can save them
     const { 
       title, names, description, fullText, category, 
-      location, eventDate, newspaperName, pageNumber, transcription 
+      location, eventDate, newspaperName, pageNumber, summary, countryOfOrigin 
     } = req.body; 
 
     let namesArray = names;
@@ -116,7 +116,8 @@ app.put('/api/archive/:id', async (req, res) => {
         eventDate,
         newspaperName, // 👈 This makes it work!
         pageNumber,    // 👈 This makes it work!
-        transcription  // 👈 This makes it work!
+        summary,  // 👈 This makes it work!
+        countryOfOrigin,
       },
       { new: true }
     );
