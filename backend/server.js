@@ -54,6 +54,7 @@ const archiveSchema = new mongoose.Schema({
   location: String,
   eventDate: String,
   newspaperName: String, 
+  countryOfOrigin: String, // 👈 Add this for international records
   pageNumber: String,
   transcription: String,
 
