@@ -1,57 +1,107 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const UploadPage = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    names: "", birthOrigin: "", category: "Portrait", 
-    eventDate: "", eventLocation: "", newspaperName: "", 
-    pageNumber: "", summary: ""
-  });
+  
+  // Form State
+  const [names, setNames] = useState("");
+  const [category, setCategory] = useState("Portrait");
+  const [eventDate, setEventDate] = useState("");
+  const [location, setLocation] = useState("");
+  const [newspaperName, setNewspaperName] = useState(""); // 👈 Added Origin
+  const [pageNumber, setPageNumber] = useState("");     // 👈 Added Page
+  const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
-
-  const handleChange = (e) => setFormData({...formData, [e.target.name]: e.target.value});
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const data = new FormData();
-    Object.keys(formData).forEach(key => data.append(key, formData[key]));
-    if (image) data.append('image', image);
+
+    const formData = new FormData();
+    formData.append('names', names);
+    formData.append('category', category);
+    formData.append('eventDate', eventDate);
+    formData.append('location', location);
+    formData.append('newspaperName', newspaperName); // 👈 Sent to server
+    formData.append('pageNumber', pageNumber);       // 👈 Sent to server
+    formData.append('description', description);
+    if (image) formData.append('image', image);
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('https://honduras-archive.onrender.com/api/archive', data, {
-        headers: { 'Content-Type': 'multipart/form-data', 'x-auth-token': token }
+      await axios.post('https://honduras-archive.onrender.com/api/archive', formData, {
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'x-auth-token': token 
+        }
       });
-      alert("Record Saved!");
-    } catch (err) { alert("Error saving record."); }
-    finally { setLoading(false); }
+      alert("Record uploaded successfully!");
+      navigate('/');
+    } catch (err) {
+      console.error(err);
+      alert("Error uploading record. Make sure you are logged in as admin.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div style={{ maxWidth: '600px', margin: '20px auto', padding: '20px', backgroundColor: '#fff', borderRadius: '8px' }}>
-      <h2 style={{ color: '#737958' }}>New Archive Entry</h2>
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <input name="names" placeholder="Full Name(s)" onChange={handleChange} required style={inputStyle} />
-        <input name="birthOrigin" placeholder="Origin of Person (e.g. from New York)" onChange={handleChange} style={inputStyle} />
-        <select name="category" onChange={handleChange} style={inputStyle}>
+    <div style={{ maxWidth: '600px', margin: '40px auto', padding: '20px', backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0,0,0,0.1)' }}>
+      <h2 style={{ color: '#737958', textAlign: 'center' }}>Upload New Archive Record</h2>
+      
+      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <label>Names (separate with commas):</label>
+        <input type="text" value={names} onChange={(e) => setNames(e.target.value)} required placeholder="e.g. Sara Gravina, Carlos Izaguirre" style={inputStyle} />
+
+        <label>Category:</label>
+        <select value={category} onChange={(e) => setCategory(e.target.value)} style={inputStyle}>
           <option value="Portrait">Portrait</option>
-          <option value="News">News / Clipping</option>
+          <option value="News">News & Clippings</option>
+          <option value="Birth">Birth</option>
+          <option value="Marriage">Marriage</option>
+          <option value="Death">Death</option>
         </select>
-        <input name="eventDate" placeholder="Date" onChange={handleChange} style={inputStyle} />
-        <input name="eventLocation" placeholder="Event Location (e.g. Tegucigalpa)" onChange={handleChange} style={inputStyle} />
-        <input name="newspaperName" placeholder="Source Name" onChange={handleChange} style={inputStyle} />
-        <input name="pageNumber" placeholder="Page #" onChange={handleChange} style={inputStyle} />
-        <textarea name="summary" placeholder="Summary of the record..." onChange={handleChange} rows="4" style={inputStyle} />
-        <input type="file" onChange={(e) => setImage(e.target.files[0])} accept="image/*" />
-        <button type="submit" disabled={loading} style={{ padding: '12px', backgroundColor: '#737958', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
-          {loading ? "Saving..." : "Upload to Archive"}
+
+        <label>Event Date:</label>
+        <input type="text" value={eventDate} onChange={(e) => setEventDate(e.target.value)} placeholder="e.g. 5 de Enero 1930" style={inputStyle} />
+
+        <label>Location:</label>
+        <input type="text" value={location} onChange={(e) => setLocation(e.target.value)} placeholder="e.g. Tegucigalpa, Francisco Morazán" style={inputStyle} />
+
+        {/* 🟢 NEW FIELDS */}
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <div style={{ flex: 2 }}>
+            <label>Newspaper/Source:</label>
+            <input type="text" value={newspaperName} onChange={(e) => setNewspaperName(e.target.value)} placeholder="e.g. El Cronista" style={inputStyle} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <label>Page:</label>
+            <input type="text" value={pageNumber} onChange={(e) => setPageNumber(e.target.value)} placeholder="e.g. 5" style={inputStyle} />
+          </div>
+        </div>
+
+        <label>Description:</label>
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows="4" style={inputStyle} />
+
+        <label>Upload Image:</label>
+        <input type="file" onChange={(e) => setImage(e.target.files[0])} accept="image/*" style={inputStyle} />
+
+        <button type="submit" disabled={loading} style={{ padding: '15px', backgroundColor: '#737958', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>
+          {loading ? "Uploading..." : "Save to Archive"}
         </button>
       </form>
     </div>
   );
 };
 
-const inputStyle = { padding: '10px', borderRadius: '4px', border: '1px solid #ccc' };
+const inputStyle = {
+  padding: '10px',
+  borderRadius: '4px',
+  border: '1px solid #ccc',
+  fontSize: '1rem'
+};
+
 export default UploadPage;
