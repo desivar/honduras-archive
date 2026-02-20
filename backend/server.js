@@ -127,21 +127,31 @@ app.put('/api/archive/:id', async (req, res) => {
 // Get all (Updated search logic)
 app.get('/api/archive', async (req, res) => {
   try {
-    const { search } = req.query;
+    const { search, letter } = req.query;
     let query = {};
 
+    // Search logic
     if (search) {
-      query = {
-        $or: [
-          { names: { $regex: search, $options: 'i' } },
-          { title: { $regex: search, $options: 'i' } },
-          { fullText: { $regex: search, $options: 'i' } }
-        ]
-      };
+      query = { $or: [
+        { names: { $regex: search, $options: 'i' } },
+        { countryOfOrigin: { $regex: search, $options: 'i' } }, // 👈 Now searchable
+        { transcription: { $regex: search, $options: 'i' } }
+      ]};
+    } else if (letter) {
+      query = { names: { $regex: `^${letter}`, $options: 'i' } };
     }
 
     const items = await Archive.find(query).sort({ createdAt: -1 });
-    res.json(items);
+    
+    // 🟢 MAGNITUDE DATA
+    const totalCount = await Archive.countDocuments();
+    const lastRecord = await Archive.findOne().sort({ createdAt: -1 });
+
+    res.json({ 
+      items, 
+      totalCount, 
+      lastUpdate: lastRecord ? lastRecord.createdAt : null 
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
