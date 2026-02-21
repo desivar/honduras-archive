@@ -22,13 +22,13 @@ const UploadPage = () => {
     setLoading(true);
 
     const formData = new FormData();
-    formData.append('names', names);
+    formData.append('names', JSON.stringify(names.split(',').map(n => n.trim())));
     formData.append('countryOfOrigin', countryOfOrigin);
     formData.append('category', category);
-    formData.append('eventDate', eventDate);
+    formData.append('dateOfPublication', eventDate);
     formData.append('location', location);
-    formData.append('newspaperName', newspaperName); // 👈 Sent to server
-    formData.append('pageNumber', pageNumber);       // 👈 Sent to server
+    formData.append('newspaperName', newspaperName);
+    formData.append('pageNumber', pageNumber);
     formData.append('summary', summary);
     if (image) formData.append('image', image);
 
