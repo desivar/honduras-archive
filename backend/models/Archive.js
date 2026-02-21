@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const archiveSchema = new mongoose.Schema({
-  names: { type: String, required: true },
+  names: [String],
   countryOfOrigin: { type: String, default: 'Honduras' }, // 🌍 Added for your international news
   newspaperName: String,
   dateOfPublication: String,
   pageNumber: String,
-  transcription: String,
+  summary: String,
   imageUrl: String,
   familySearchId: String, // 💡 Great for your volunteer work!
   createdAt: { type: Date, default: Date.now }
