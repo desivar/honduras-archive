@@ -132,12 +132,12 @@ app.get('/api/archive', async (req, res) => {
 
     // Search logic
     if (search) {
-      query = { $or: [
-        { names: { $regex: search, $options: 'i' } },
-        { countryOfOrigin: { $regex: search, $options: 'i' } }, // 👈 Now searchable
-        { summary: { $regex: search, $options: 'i' } }
-      ]};
-    } else if (letter) {
+query = { $or: [
+{ names: { $regex: search, $options: 'i' } },
+{ countryOfOrigin: { $regex: search, $options: 'i' } },
+{ summary: { $regex: search, $options: 'i' } }
+]};
+} else if (letter && letter !== 'null') {
 query = { names: { $elemMatch: { $regex: '^' + letter, $options: 'i' } } };
 }
 
