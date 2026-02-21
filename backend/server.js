@@ -138,23 +138,23 @@ app.get('/api/archive', async (req, res) => {
         { summary: { $regex: search, $options: 'i' } }
       ]};
     } else if (letter) {
-         query = { names: { $elemMatch: { $regex: '^' + letter, $options: 'i' } } };
+query = { names: { $elemMatch: { $regex: '^' + letter, $options: 'i' } } };
+}
 
-    const items = await Archive.find(query).sort({ createdAt: -1 });
-    
-    // 🟢 MAGNITUDE DATA
-    const totalCount = await Archive.countDocuments();
-    const lastRecord = await Archive.findOne().sort({ createdAt: -1 });
+const items = await Archive.find(query).sort({ createdAt: -1 });
+const totalCount = await Archive.countDocuments();
+const lastRecord = await Archive.findOne().sort({ createdAt: -1 });
 
-    res.json({ 
-      items, 
-      totalCount, 
-      lastUpdate: lastRecord ? lastRecord.createdAt : null 
-    });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+res.json({
+items,
+totalCount,
+lastUpdate: lastRecord ? lastRecord.createdAt : null
 });
+} catch (error) {
+res.status(500).json({ error: error.message });
+}
+});
+
 
 // Delete
 app.delete('/api/archive/:id', async (req, res) => {
