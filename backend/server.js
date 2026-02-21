@@ -138,8 +138,7 @@ app.get('/api/archive', async (req, res) => {
         { summary: { $regex: search, $options: 'i' } }
       ]};
     } else if (letter) {
-      query = { names: { $elemMatch: { $regex: `^${letter}`, $options: 'i' } } };
-}
+         query = { names: { $elemMatch: { $regex: '^' + letter, $options: 'i' } } };
 
     const items = await Archive.find(query).sort({ createdAt: -1 });
     
