@@ -152,7 +152,7 @@ const Sidebar = ({ user, onLogout, totalCount }) => {
           {"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").map(l => (
             <Link 
               key={l} 
-              to={`/alpha/${l}`} 
+              to={'/?letter=' + l}
               style={{ 
                 color: '#EFE7DD', 
                 textDecoration: 'none', 
