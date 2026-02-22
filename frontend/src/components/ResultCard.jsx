@@ -83,7 +83,7 @@ alert("APA Citation copied to clipboard!");
 
          {record.description && (
           <p style={{ marginBottom: '8px', fontStyle: 'italic', borderTop: '1px solid #eee', paddingTop: '5px' }}>
-             {record.description.substring(0, 100)}...
+             {record.summary.substring(0, 100)}...
  </p>
  )}
         </div>
