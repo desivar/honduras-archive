@@ -10,22 +10,22 @@ const CollectionView = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchCollection = async () => {
-      setLoading(true);
-      try {
-        
-        // Replace localhost with  Render backend URL
-const res = await axios.get(`https://honduras-archive.onrender.com/api/search?${type}=${value}`);
-        setResults(res.data);
-      } catch (err) {
-        console.error("Fetch error:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCollection();
-  }, [type, value]);
+    useEffect(() => {
+ const fetchCollection = async () => {
+ setLoading(true);
+ try {
+ const queryParam = type === 'alpha' ? 'letter' : type;
+ const res = await axios.get(`https://honduras-archive.onrender.com/api/search?${queryParam}=${value}`);
+ setResults(res.data);
+  } catch (err) {
+ console.error("Fetch error:", err);
+ } finally {
+ setLoading(false);
+ }
+ };
+ fetchCollection();
+}, [type, value]);
+
 
   return (
     <div style={{ 
